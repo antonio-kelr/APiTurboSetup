@@ -1,0 +1,52 @@
+using APiTurboSetup.Data;
+using APiTurboSetup.Interfaces;
+using APiTurboSetup.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace APiTurboSetup.Repositories
+{
+    public class ProdutoRepository : BaseRepository<Produto>, IProdutoRepository
+    {
+        public ProdutoRepository(ApplicationDbContext context) : base(context)
+        {
+        }
+
+        public async Task<IEnumerable<Produto>> GetByCategoriaIdAsync(int categoriaId)
+        {
+            return await _dbSet.Where(p => p.CategoriaId == categoriaId)
+                               .Include(p => p.Categoria)
+                               .ToListAsync();
+        }
+
+        public async Task<Produto?> GetByNomeAsync(string nome)
+        {
+            return await _dbSet.FirstOrDefaultAsync(p => p.Nome.ToLower() == nome.ToLower());
+        }
+
+        public async Task<Produto?> GetBySlugAsync(string slug)
+        {
+            if (string.IsNullOrEmpty(slug))
+                return null;
+                
+            return await _dbSet.FirstOrDefaultAsync(p => p.Slug.ToLower() == slug.ToLower());
+        }
+
+        // Sobrescrevendo métodos para incluir a categoria nas consultas
+        public override async Task<IEnumerable<Produto>> GetAllAsync()
+        {
+            return await _dbSet.Include(p => p.Categoria)
+                              .Include(p => p.Imagens)
+                              .ToListAsync();
+        }
+
+        public override async Task<Produto?> GetByIdAsync(int id)
+        {
+            return await _dbSet.Include(p => p.Categoria)
+                              .Include(p => p.Imagens)
+                              .FirstOrDefaultAsync(p => p.Id == id);
+        }
+    }
+} 
