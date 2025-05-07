@@ -13,6 +13,7 @@ namespace APiTurboSetup.Data
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<ProdutoImagem> ProdutoImagens { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +37,35 @@ namespace APiTurboSetup.Data
                 .WithMany(p => p.Imagens)
                 .HasForeignKey(pi => pi.ProdutoId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configuração da tabela Users
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Nome)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Senha)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Telefone)
+                .HasMaxLength(20);
+
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Role)
+                .HasMaxLength(20);
 
             // Semente de dados - categorias iniciais
             modelBuilder.Entity<Categoria>().HasData(

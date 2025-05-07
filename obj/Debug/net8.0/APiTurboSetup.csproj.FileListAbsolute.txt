@@ -169,3 +169,4 @@ C:\Users\Antonio\Documents\Projeto-loja-virtual\BACK-END\APiTurboSetup\obj\Debug
 C:\Users\Antonio\Documents\Projeto-loja-virtual\BACK-END\APiTurboSetup\obj\Debug\net8.0\APiTurboSetup.pdb
 C:\Users\Antonio\Documents\Projeto-loja-virtual\BACK-END\APiTurboSetup\obj\Debug\net8.0\APiTurboSetup.genruntimeconfig.cache
 C:\Users\Antonio\Documents\Projeto-loja-virtual\BACK-END\APiTurboSetup\obj\Debug\net8.0\ref\APiTurboSetup.dll
+C:\Users\Antonio\Documents\Projeto-loja-virtual\BACK-END\APiTurboSetup\bin\Debug\net8.0\BCrypt.Net-Next.dll
