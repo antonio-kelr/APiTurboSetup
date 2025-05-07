@@ -11,12 +11,19 @@ namespace APiTurboSetup.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IProdutoRepository _produtoRepository;
 
-        public CategoriasController(ICategoriaRepository categoriaRepository)
+        public CategoriasController(ICategoriaRepository categoriaRepository, IProdutoRepository produtoRepository)
         {
             _categoriaRepository = categoriaRepository;
+            _produtoRepository = produtoRepository;
         }
+        
         [HttpGet("status")]
+        public ActionResult GetStatus()
+        {
+            return Ok("API de Categorias funcionando normalmente.");
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
@@ -36,6 +43,17 @@ namespace APiTurboSetup.Controllers
             }
 
             return Ok(categoria);
+        }
+        
+        [HttpGet("{id}/produtos")]
+        public async Task<ActionResult<IEnumerable<Produto>>> GetProdutosByCategoria(int id)
+        {
+            var categoria = await _categoriaRepository.GetByIdAsync(id);
+            if (categoria == null)
+                return NotFound("Categoria não encontrada.");
+                
+            var produtos = await _produtoRepository.GetByCategoriaIdAsync(id);
+            return Ok(produtos);
         }
 
         [HttpPost]

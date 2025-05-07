@@ -101,11 +101,12 @@ namespace APiTurboSetup.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduto(int id, Produto produto)
         {
-            if (id != produto.Id)
-                return BadRequest("ID do produto não corresponde.");
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var existingProduto = await _produtoRepository.GetByIdAsync(id);
+            if (existingProduto == null)
+                return NotFound("Produto não encontrado.");
 
             // Gerar slug automaticamente se não for fornecido
             if (string.IsNullOrEmpty(produto.Slug))
@@ -117,10 +118,6 @@ namespace APiTurboSetup.Controllers
             {
                 return BadRequest("O slug deve conter apenas letras minúsculas, números e hífens.");
             }
-
-            var existingProduto = await _produtoRepository.GetByIdAsync(id);
-            if (existingProduto == null)
-                return NotFound("Produto não encontrado.");
 
             var categoria = await _categoriaRepository.GetByIdAsync(produto.CategoriaId);
             if (categoria == null)
@@ -135,8 +132,15 @@ namespace APiTurboSetup.Controllers
             if (sameSlugDifferentId != null && sameSlugDifferentId.Id != id)
                 return Conflict("Já existe outro produto com este slug.");
 
-            await _produtoRepository.UpdateAsync(produto);
-            return NoContent();
+            // Atualizar as propriedades do produto existente
+            existingProduto.Nome = produto.Nome;
+            existingProduto.Descricao = produto.Descricao;
+            existingProduto.Preco = produto.Preco;
+            existingProduto.CategoriaId = produto.CategoriaId;
+            existingProduto.Slug = produto.Slug;
+
+            var updatedProduto = await _produtoRepository.UpdateAsync(existingProduto);
+            return Ok(updatedProduto);
         }
 
         [HttpDelete("{id}")]

@@ -36,6 +36,7 @@ namespace APiTurboSetup.Repositories
 
         public virtual async Task<T> UpdateAsync(T entity)
         {
+            _context.ChangeTracker.Clear();
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
             return entity;

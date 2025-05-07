@@ -18,6 +18,22 @@ namespace APiTurboSetup.Repositories
         {
             return await _dbSet.Where(p => p.CategoriaId == categoriaId)
                                .Include(p => p.Categoria)
+                               .Include(p => p.Imagens)
+                               .Select(p => new Produto
+                               {
+                                   Id = p.Id,
+                                   Nome = p.Nome,
+                                   Slug = p.Slug,
+                                   Descricao = p.Descricao,
+                                   Preco = p.Preco,
+                                   CategoriaId = p.CategoriaId,
+                                   Categoria = new Categoria
+                                   {
+                                       Id = p.Categoria.Id,
+                                       Nome = p.Categoria.Nome
+                                   },
+                                   Imagens = p.Imagens
+                               })
                                .ToListAsync();
         }
 
@@ -39,6 +55,21 @@ namespace APiTurboSetup.Repositories
         {
             return await _dbSet.Include(p => p.Categoria)
                               .Include(p => p.Imagens)
+                              .Select(p => new Produto
+                              {
+                                  Id = p.Id,
+                                  Nome = p.Nome,
+                                  Slug = p.Slug,
+                                  Descricao = p.Descricao,
+                                  Preco = p.Preco,
+                                  CategoriaId = p.CategoriaId,
+                                  Categoria = new Categoria
+                                  {
+                                      Id = p.Categoria.Id,
+                                      Nome = p.Categoria.Nome
+                                  },
+                                  Imagens = p.Imagens
+                              })
                               .ToListAsync();
         }
 
@@ -46,6 +77,21 @@ namespace APiTurboSetup.Repositories
         {
             return await _dbSet.Include(p => p.Categoria)
                               .Include(p => p.Imagens)
+                              .Select(p => new Produto
+                              {
+                                  Id = p.Id,
+                                  Nome = p.Nome,
+                                  Slug = p.Slug,
+                                  Descricao = p.Descricao,
+                                  Preco = p.Preco,
+                                  CategoriaId = p.CategoriaId,
+                                  Categoria = new Categoria
+                                  {
+                                      Id = p.Categoria.Id,
+                                      Nome = p.Categoria.Nome
+                                  },
+                                  Imagens = p.Imagens
+                              })
                               .FirstOrDefaultAsync(p => p.Id == id);
         }
     }
