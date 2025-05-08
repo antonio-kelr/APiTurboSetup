@@ -49,7 +49,12 @@ namespace APiTurboSetup.Controllers
             // Criptografa a senha antes de salvar
             user.Senha = BCrypt.Net.BCrypt.HashPassword(user.Senha);
             user.Ativo = true;
-            user.Role = "user"; // Role padrão
+            
+            // Define role baseado no nome do usuário ou mantém o que foi enviado
+            if (string.IsNullOrEmpty(user.Role))
+            {
+                user.Role = user.Nome.ToLower().Contains("admin") ? "admin" : "user";
+            }
 
             var newUser = await _userRepository.AddAsync(user);
             return CreatedAtAction(nameof(GetUser), new { id = newUser.Id }, newUser);
@@ -136,4 +141,4 @@ namespace APiTurboSetup.Controllers
         public string Email { get; set; }
         public string Senha { get; set; }
     }
-} 
+}
