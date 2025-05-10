@@ -18,7 +18,7 @@ namespace APiTurboSetup.Controllers
             _categoriaRepository = categoriaRepository;
             _produtoRepository = produtoRepository;
         }
-        
+
         [HttpGet("status")]
         public ActionResult GetStatus()
         {
@@ -44,14 +44,14 @@ namespace APiTurboSetup.Controllers
 
             return Ok(categoria);
         }
-        
+
         [HttpGet("{id}/produtos")]
         public async Task<ActionResult<IEnumerable<Produto>>> GetProdutosByCategoria(int id)
         {
             var categoria = await _categoriaRepository.GetByIdAsync(id);
             if (categoria == null)
                 return NotFound("Categoria não encontrada.");
-                
+
             var produtos = await _produtoRepository.GetByCategoriaIdAsync(id);
             return Ok(produtos);
         }
@@ -73,8 +73,7 @@ namespace APiTurboSetup.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategoria(int id, Categoria categoria)
         {
-            if (id != categoria.Id)
-                return BadRequest("ID da categoria não corresponde.");
+            Console.WriteLine($"[DEBUG] Atualizando categoria ID={id}, Nome={categoria.Nome}");
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -87,8 +86,11 @@ namespace APiTurboSetup.Controllers
             if (sameNameDifferentId != null && sameNameDifferentId.Id != id)
                 return Conflict("Já existe outra categoria com este nome.");
 
-            await _categoriaRepository.UpdateAsync(categoria);
-            return NoContent();
+            // Atualiza usando o ID da URL
+            existingCategoria.Nome = categoria.Nome;
+
+            await _categoriaRepository.UpdateAsync(existingCategoria);
+             return Ok(new { message = "Categoria atualizada com sucesso!", categoria = existingCategoria });
         }
 
         [HttpDelete("{id}")]
