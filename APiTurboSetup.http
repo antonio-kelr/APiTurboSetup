@@ -1,6 +1,24 @@
-@APiTurboSetup_HostAddress = http://localhost:5299
+@APiTurboSetup_HostAddress = http://localhost:5286
 
 GET {{APiTurboSetup_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### Criar novo usuário
+POST {{APiTurboSetup_HostAddress}}/api/Users
+Content-Type: application/json
+
+{
+    "nome": "Usuário Teste",
+    "email": "usuario@teste.com",
+    "senha": "senha123",
+    "telefone": "11999999999"
+}
+
+### Login de usuário
+POST {{APiTurboSetup_HostAddress}}/api/Users/login
+Content-Type: application/json
+
+{
+    "email": "usuario@teste.com",
+    "senha": "senha123"
+}

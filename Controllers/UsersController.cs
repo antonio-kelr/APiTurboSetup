@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using BCrypt.Net;
+// Adicionando para IConfiguration, se necessário, mas TokenService já o usa.
+// using Microsoft.Extensions.Configuration;
 
 namespace APiTurboSetup.Controllers
 {
@@ -12,10 +14,14 @@ namespace APiTurboSetup.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly TokenService _tokenService; // Injetando TokenService
+        // private readonly IConfiguration _configuration; // Não é mais necessário aqui diretamente
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserRepository userRepository, TokenService tokenService /*, IConfiguration configuration*/)
         {
             _userRepository = userRepository;
+            _tokenService = tokenService;
+            // _configuration = configuration; 
         }
 
         [HttpGet]
@@ -132,7 +138,19 @@ namespace APiTurboSetup.Controllers
                 return Unauthorized("Usuário inativo");
             }
 
-            return Ok(user);
+            // Gerar o token JWT
+            var token = _tokenService.GenerateToken(user);
+
+            return Ok(new
+            {
+                User = new { // Retornando apenas Id e outras infos se desejar, em vez do objeto User completo
+                    user.Id,
+                    user.Nome,
+                    user.Email,
+                    user.Role
+                },
+                Token = token
+            });
         }
     }
 
