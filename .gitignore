@@ -1,0 +1,39 @@
+# Arquivos de configuração sensíveis
+appsettings.json
+firebase-adminsdk.json
+*.pfx
+*.key
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*
+
+# Arquivos de build
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Arquivos de IDE
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Arquivos de log
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Arquivos de dependências
+node_modules/
+packages/ 
