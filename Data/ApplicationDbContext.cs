@@ -14,6 +14,8 @@ namespace APiTurboSetup.Data
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<ProdutoImagem> ProdutoImagens { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Carrinho> Carrinhos { get; set; }
+        public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,7 +64,6 @@ namespace APiTurboSetup.Data
                 .Property(u => u.Telefone)
                 .HasMaxLength(20);
 
-
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
                 .HasMaxLength(20);
@@ -73,6 +74,26 @@ namespace APiTurboSetup.Data
                 new Categoria { Id = 2, Nome = "Roupas" },
                 new Categoria { Id = 3, Nome = "Alimentos" }
             );
+
+            // Configurações do Carrinho
+            modelBuilder.Entity<Carrinho>()
+                .HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configurações do ItemCarrinho
+            modelBuilder.Entity<ItemCarrinho>()
+                .HasOne(i => i.Carrinho)
+                .WithMany(c => c.Itens)
+                .HasForeignKey(i => i.CarrinhoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ItemCarrinho>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 } 

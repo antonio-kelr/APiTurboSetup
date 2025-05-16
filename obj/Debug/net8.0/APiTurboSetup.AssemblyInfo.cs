@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("APiTurboSetup")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d31d97ffb6ec9c2e4f6cc4e55995c71913f84433")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e106e2ddf9586686e634c99566f7299a63a5e096")]
 [assembly: System.Reflection.AssemblyProductAttribute("APiTurboSetup")]
 [assembly: System.Reflection.AssemblyTitleAttribute("APiTurboSetup")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

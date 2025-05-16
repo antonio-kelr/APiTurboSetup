@@ -7,7 +7,7 @@ namespace APiTurboSetup.Models
     public class ItemCarrinho
     {
         [Key]
-        public int ItemCarrinhoId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public int CarrinhoId { get; set; }
@@ -16,14 +16,13 @@ namespace APiTurboSetup.Models
         public int ProdutoId { get; set; }
 
         [Required]
-        public int Quantidade { get; set; } = 1;
+        public int Quantidade { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal PrecoUnitario { get; set; }
 
-        [NotMapped] // Calculado, não armazenado diretamente no banco
-        public decimal Subtotal => Quantidade * PrecoUnitario;
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Subtotal { get; set; }
 
         [Required]
         public string StatusItem { get; set; } = "ativo"; // "ativo" ou "removido"
@@ -38,8 +37,6 @@ namespace APiTurboSetup.Models
 
         [ForeignKey("ProdutoId")]
         public virtual Produto? Produto { get; set; } // Torna o Produto opcional (nullable)
-
-
     }
 }
 

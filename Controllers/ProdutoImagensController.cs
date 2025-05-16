@@ -3,6 +3,8 @@ using APiTurboSetup.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace APiTurboSetup.Controllers
 {
@@ -12,11 +14,19 @@ namespace APiTurboSetup.Controllers
     {
         private readonly IProdutoImagemRepository _produtoImagemRepository;
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IFirebaseStorageService _firebaseStorageService;
+        private readonly string _bucketName;
 
-        public ProdutoImagensController(IProdutoImagemRepository produtoImagemRepository, IProdutoRepository produtoRepository)
+        public ProdutoImagensController(
+            IProdutoImagemRepository produtoImagemRepository, 
+            IProdutoRepository produtoRepository,
+            IFirebaseStorageService firebaseStorageService,
+            IConfiguration configuration)
         {
             _produtoImagemRepository = produtoImagemRepository;
             _produtoRepository = produtoRepository;
+            _firebaseStorageService = firebaseStorageService;
+            _bucketName = configuration["Firebase:BucketName"];
         }
 
         [HttpGet]
@@ -51,17 +61,52 @@ namespace APiTurboSetup.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProdutoImagem>> CreateProdutoImagem(ProdutoImagem produtoImagem)
+        public async Task<ActionResult<IEnumerable<ProdutoImagem>>> UploadImagens([FromForm] int produtoId, [FromForm] List<IFormFile> imagens)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            Console.WriteLine($"INÍCIO UPLOAD IMAGENS - ProdutoId: {produtoId} - Quantidade de imagens: {imagens?.Count ?? 0}");
 
-            var produto = await _produtoRepository.GetByIdAsync(produtoImagem.ProdutoId);
+            if (imagens == null || !imagens.Any())
+                return BadRequest("Nenhuma imagem foi enviada.");
+
+            var produto = await _produtoRepository.GetByIdAsync(produtoId);
             if (produto == null)
-                return BadRequest("Produto inválido.");
+                return NotFound("Produto não encontrado.");
 
-            var newImagem = await _produtoImagemRepository.AddAsync(produtoImagem);
-            return CreatedAtAction(nameof(GetProdutoImagem), new { id = newImagem.Id }, newImagem);
+            try
+            {
+                // Upload das imagens para o Firebase Storage
+                var urls = await _firebaseStorageService.UploadImagesAsync(imagens, $"produtos/{produtoId}");
+                
+                if (urls == null || !urls.Any())
+                    return BadRequest("Falha ao fazer upload das imagens.");
+
+                // Criar registros das imagens no banco de dados
+                var produtoImagens = new List<ProdutoImagem>();
+                for (int i = 0; i < urls.Count; i++)
+                {
+                    var produtoImagem = new ProdutoImagem
+                    {
+                        ProdutoId = produtoId,
+                        Url = urls[i],
+                        Titulo = imagens[i].FileName,
+                        Ordem = i
+                    };
+                    produtoImagens.Add(produtoImagem);
+                }
+
+                var newImagens = new List<ProdutoImagem>();
+                foreach (var imagem in produtoImagens)
+                {
+                    var newImagem = await _produtoImagemRepository.AddAsync(imagem);
+                    newImagens.Add(newImagem);
+                }
+
+                return CreatedAtAction(nameof(GetImagensByProduto), new { produtoId }, newImagens);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao fazer upload das imagens: {ex.Message}");
+            }
         }
 
         [HttpPut("{id}")]

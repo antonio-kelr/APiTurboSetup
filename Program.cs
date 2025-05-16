@@ -1,6 +1,7 @@
 using APiTurboSetup.Data;
 using APiTurboSetup.Interfaces;
 using APiTurboSetup.Repositories;
+using APiTurboSetup.Services;
 using APiTurboSetup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // ⬅️ Coloque a URL do seu frontend aqui
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 
 // Exibir a string de conexão para depuração
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -22,6 +34,8 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IProdutoImagemRepository, ProdutoImagemRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
+builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 builder.Services.AddScoped<TokenService>();
 
 // Configuração de Autenticação JWT
@@ -64,6 +78,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

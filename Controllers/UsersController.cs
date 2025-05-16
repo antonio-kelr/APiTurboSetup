@@ -1,5 +1,6 @@
 using APiTurboSetup.Interfaces;
 using APiTurboSetup.Models;
+using APiTurboSetup.Validations;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -46,6 +47,10 @@ namespace APiTurboSetup.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            // Validar CPF
+            if (!CpfValidation.IsValid(user.Cpf))
+                return BadRequest("CPF inválido");
 
             // Verificar se já existe usuário com este email
             var existingUser = await _userRepository.GetByEmailAsync(user.Email);
@@ -98,6 +103,9 @@ namespace APiTurboSetup.Controllers
             existingUser.Telefone = user.Telefone;
             existingUser.Ativo = user.Ativo;
             existingUser.Role = user.Role;
+            existingUser.DataNascimento = user.DataNascimento;
+            existingUser.Genero = user.Genero;
+            existingUser.Cpf = user.Cpf;
 
             var updatedUser = await _userRepository.UpdateAsync(existingUser);
             return Ok(updatedUser);
