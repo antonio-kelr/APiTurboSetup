@@ -22,6 +22,9 @@ namespace APiTurboSetup.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Preco { get; set; }
         
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? PrecoAntigo { get; set; }
+        
         // Chave estrangeira
         public int CategoriaId { get; set; }
         

@@ -135,7 +135,14 @@ namespace APiTurboSetup.Controllers
             // Atualizar as propriedades do produto existente
             existingProduto.Nome = produto.Nome;
             existingProduto.Descricao = produto.Descricao;
-            existingProduto.Preco = produto.Preco;
+            
+            // Se o preço for alterado, salvar o preço antigo
+            if (existingProduto.Preco != produto.Preco)
+            {
+                existingProduto.PrecoAntigo = existingProduto.Preco;
+                existingProduto.Preco = produto.Preco;
+            }
+            
             existingProduto.CategoriaId = produto.CategoriaId;
             existingProduto.Slug = produto.Slug;
 
