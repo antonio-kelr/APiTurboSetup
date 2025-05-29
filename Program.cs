@@ -37,6 +37,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
 builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<GoogleAuthService>();
 
 // Configuração de Autenticação JWT
 builder.Services.AddAuthentication(options =>

@@ -53,14 +53,15 @@ namespace APiTurboSetup.Controllers
             return Ok(produto);
         }
 
-        [HttpGet("categoria/{categoriaId}")]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetProdutosByCategoria(int categoriaId)
-        {
-            var categoria = await _categoriaRepository.GetByIdAsync(categoriaId);
-            if (categoria == null)
-                return NotFound("Categoria não encontrada.");
 
-            var produtos = await _produtoRepository.GetByCategoriaIdAsync(categoriaId);
+        [HttpGet("categoria/{nomeCategoria}")]
+        public async Task<ActionResult<IEnumerable<Produto>>> GetProdutosByNomeCategoria(string nomeCategoria)
+        {
+            var categoria = await _categoriaRepository.GetByNomeAsync(nomeCategoria);
+            if (categoria == null)
+                return NotFound($"Categoria '{nomeCategoria}' não encontrada.");
+
+            var produtos = await _produtoRepository.GetByCategoriaIdAsync(categoria.Id);
             return Ok(produtos);
         }
 
@@ -135,14 +136,14 @@ namespace APiTurboSetup.Controllers
             // Atualizar as propriedades do produto existente
             existingProduto.Nome = produto.Nome;
             existingProduto.Descricao = produto.Descricao;
-            
+
             // Se o preço for alterado, salvar o preço antigo
             if (existingProduto.Preco != produto.Preco)
             {
                 existingProduto.PrecoAntigo = existingProduto.Preco;
                 existingProduto.Preco = produto.Preco;
             }
-            
+
             existingProduto.CategoriaId = produto.CategoriaId;
             existingProduto.Slug = produto.Slug;
 
@@ -160,4 +161,4 @@ namespace APiTurboSetup.Controllers
             return NoContent();
         }
     }
-} 
+}
