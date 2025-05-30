@@ -3,12 +3,13 @@ using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using APiTurboSetup.Models;
 using APiTurboSetup.Data;
+using APiTurboSetup.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace APiTurboSetup.Services
 {
-    public class GoogleAuthService
+    public class GoogleAuthService : IGoogleAuthService
     {
         private readonly TokenService _tokenService;
         private readonly ApplicationDbContext _context;
@@ -30,7 +31,7 @@ namespace APiTurboSetup.Services
             }
         }
 
-        public async Task<(bool success, string message, string? token)> ValidateGoogleToken(string firebaseIdToken)
+        public async Task<(bool success, string message, string? token, int? userId)> ValidateGoogleToken(string firebaseIdToken)
         {
             try
             {
@@ -64,12 +65,12 @@ namespace APiTurboSetup.Services
                 }
 
                 var token = _tokenService.GenerateToken(user);
-                return (true, "Autenticação bem-sucedida", token);
+                return (true, "Autenticação bem-sucedida", token, user.Id);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao validar token Firebase: {ex.Message}");
-                return (false, $"Erro ao validar token Firebase: {ex.Message}", null);
+                return (false, $"Erro ao validar token Firebase: {ex.Message}", null, null);
             }
         }
     }

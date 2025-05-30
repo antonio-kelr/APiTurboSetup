@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using APiTurboSetup.Services;
 using APiTurboSetup.Models;
+using APiTurboSetup.Interfaces;
 
 namespace APiTurboSetup.Controllers
 {
@@ -8,9 +9,9 @@ namespace APiTurboSetup.Controllers
     [Route("api/[controller]")]
     public class GoogleAuthController : ControllerBase
     {
-        private readonly GoogleAuthService _googleAuthService;
+        private readonly IGoogleAuthService _googleAuthService;
 
-        public GoogleAuthController(GoogleAuthService googleAuthService)
+        public GoogleAuthController(IGoogleAuthService googleAuthService)
         {
             _googleAuthService = googleAuthService;
         }
@@ -25,14 +26,14 @@ namespace APiTurboSetup.Controllers
                 return BadRequest("Token não fornecido");
             }
 
-            var (success, message, token) = await _googleAuthService.ValidateGoogleToken(model.token);
+            var (success, message, token, userId) = await _googleAuthService.ValidateGoogleToken(model.token);
 
             if (!success)
             {
                 return BadRequest(message);
             }
 
-            return Ok(new { token, message });
+            return Ok(new { token, message, userId });
         }
     }
 } 

@@ -17,12 +17,14 @@ namespace APiTurboSetup.Controllers
         private readonly IUserRepository _userRepository;
         private readonly TokenService _tokenService; // Injetando TokenService
         // private readonly IConfiguration _configuration; // Não é mais necessário aqui diretamente
+        private readonly IGoogleAuthService _googleAuthService;
 
-        public UsersController(IUserRepository userRepository, TokenService tokenService /*, IConfiguration configuration*/)
+        public UsersController(IUserRepository userRepository, TokenService tokenService /*, IConfiguration configuration*/, IGoogleAuthService googleAuthService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             // _configuration = configuration; 
+            _googleAuthService = googleAuthService;
         }
 
         [HttpGet]
@@ -122,43 +124,21 @@ namespace APiTurboSetup.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login(LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] GoogleAuthModel model)
         {
-            if (!ModelState.IsValid)
+            if (model == null || string.IsNullOrEmpty(model.token))
             {
-                return BadRequest(ModelState);
+                return BadRequest("Token não fornecido");
             }
 
-            var user = await _userRepository.GetByEmailAsync(request.Email);
-            if (user == null)
+            var (success, message, token, userId) = await _googleAuthService.ValidateGoogleToken(model.token);
+
+            if (!success)
             {
-                return Unauthorized("Email ou senha inválidos");
+                return BadRequest(message);
             }
 
-            // Verifica se a senha está correta usando BCrypt
-            if (!BCrypt.Net.BCrypt.Verify(request.Senha, user.Senha))
-            {
-                return Unauthorized("Email ou senha inválidos");
-            }
-
-            if (!user.Ativo)
-            {
-                return Unauthorized("Usuário inativo");
-            }
-
-            // Gerar o token JWT
-            var token = _tokenService.GenerateToken(user);
-
-            return Ok(new
-            {
-                User = new { // Retornando apenas Id e outras infos se desejar, em vez do objeto User completo
-                    user.Id,
-                    user.Nome,
-                    user.Email,
-                    user.Role
-                },
-                Token = token
-            });
+            return Ok(new { token, message, userId });
         }
     }
 }
