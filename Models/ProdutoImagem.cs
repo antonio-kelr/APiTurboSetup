@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace APiTurboSetup.Models
 {
@@ -22,6 +23,7 @@ namespace APiTurboSetup.Models
         
         // Propriedade de navegação - uma imagem pertence a um produto
         [ForeignKey("ProdutoId")]
+        [JsonIgnore]
         public virtual Produto? Produto { get; set; }
     }
 } 

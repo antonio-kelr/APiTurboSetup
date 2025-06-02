@@ -15,7 +15,7 @@ namespace APiTurboSetup.Models
         [StringLength(150, ErrorMessage = "O slug deve ter no máximo 150 caracteres")]
         public string? Slug { get; set; } = string.Empty;
         
-        [StringLength(500, ErrorMessage = "A descrição deve ter no máximo 500 caracteres")]
+        [StringLength(900, ErrorMessage = "A descrição deve ter no máximo 900 caracteres")]
         public string? Descricao { get; set; }
         
         [Required(ErrorMessage = "O preço do produto é obrigatório")]

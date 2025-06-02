@@ -47,7 +47,25 @@ namespace APiTurboSetup.Repositories
             if (string.IsNullOrEmpty(slug))
                 return null;
                 
-            return await _dbSet.FirstOrDefaultAsync(p => p.Slug.ToLower() == slug.ToLower());
+            return await _dbSet.Include(p => p.Categoria)
+                              .Include(p => p.Imagens)
+                              .Select(p => new Produto
+                              {
+                                  Id = p.Id,
+                                  Nome = p.Nome,
+                                  Slug = p.Slug,
+                                  Descricao = p.Descricao,
+                                  Preco = p.Preco,
+                                  PrecoAntigo = p.PrecoAntigo,
+                                  CategoriaId = p.CategoriaId,
+                                  Categoria = new Categoria
+                                  {
+                                      Id = p.Categoria.Id,
+                                      Nome = p.Categoria.Nome
+                                  },
+                                  Imagens = p.Imagens
+                              })
+                              .FirstOrDefaultAsync(p => p.Slug.ToLower() == slug.ToLower());
         }
 
         // Sobrescrevendo métodos para incluir a categoria nas consultas

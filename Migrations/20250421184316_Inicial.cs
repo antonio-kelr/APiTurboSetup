@@ -34,7 +34,7 @@ namespace APiTurboSetup.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Nome = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Slug = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Descricao = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Descricao = table.Column<string>(type: "character varying(900)", maxLength: 900, nullable: true),
                     Preco = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     CategoriaId = table.Column<int>(type: "integer", nullable: false)
                 },
