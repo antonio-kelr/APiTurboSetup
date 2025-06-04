@@ -130,5 +130,73 @@ namespace APiTurboSetup.Controllers
                 return BadRequest(new { message = "Erro ao obter carrinho", error = ex.Message });
             }
         }
+
+        [HttpDelete("remover-produto/{produtoId}")]
+        public async Task<IActionResult> RemoverProduto(int produtoId)
+        {
+            try
+            {
+                Console.WriteLine("=== INÍCIO DA REQUISIÇÃO REMOVER PRODUTO ===");
+                Console.WriteLine($"ProdutoId recebido: {produtoId}");
+                
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                {
+                    Console.WriteLine("ERRO: Token não contém o ID do usuário");
+                    return Unauthorized("Token inválido ou expirado");
+                }
+
+                var userId = int.Parse(userIdClaim.Value);
+                Console.WriteLine($"UserId extraído do token: {userId}");
+
+                var carrinho = await _carrinhoRepository.ObterCarrinhoAtivoPorUsuario(userId);
+                Console.WriteLine($"Carrinho encontrado: {(carrinho != null ? "Sim" : "Não")}");
+
+                if (carrinho == null)
+                {
+                    Console.WriteLine("Carrinho não encontrado para o usuário");
+                    return NotFound("Carrinho não encontrado");
+                }
+
+                Console.WriteLine($"Carrinho ID: {carrinho.Id}");
+                Console.WriteLine($"Total de itens no carrinho: {carrinho.Itens?.Count ?? 0}");
+                
+                // Verifica se o produto existe no carrinho antes de tentar remover
+                var itemExiste = carrinho.Itens?.Any(i => i.ProdutoId == produtoId) ?? false;
+                Console.WriteLine($"Produto {produtoId} existe no carrinho: {itemExiste}");
+
+                if (!itemExiste)
+                {
+                    Console.WriteLine($"Produto {produtoId} não encontrado no carrinho");
+                    return NotFound("Produto não encontrado no carrinho");
+                }
+
+                var sucesso = await _carrinhoRepository.RemoverItem(carrinho.Id, produtoId);
+                if (!sucesso)
+                {
+                    Console.WriteLine($"Falha ao remover produto {produtoId} do carrinho");
+                    return NotFound("Produto não encontrado no carrinho");
+                }
+
+                // Verifica se o produto foi realmente removido
+                var carrinhoAtualizado = await _carrinhoRepository.ObterCarrinhoAtivoPorUsuario(userId);
+                var produtoAindaExiste = carrinhoAtualizado?.Itens?.Any(i => i.ProdutoId == produtoId) ?? false;
+                Console.WriteLine($"Produto {produtoId} ainda existe no carrinho após remoção: {produtoAindaExiste}");
+
+                Console.WriteLine("=== FIM DA REQUISIÇÃO REMOVER PRODUTO ===");
+                return Ok(new { 
+                    message = "Produto removido do carrinho com sucesso",
+                    carrinhoId = carrinho.Id,
+                    produtoId = produtoId,
+                    totalAtual = carrinhoAtualizado?.Total ?? 0
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERRO: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return BadRequest(new { message = "Erro ao remover produto do carrinho", error = ex.Message });
+            }
+        }
     }
 } 

@@ -67,5 +67,46 @@ namespace APiTurboSetup.Repositories
             await _context.SaveChangesAsync();
             return carrinho;
         }
+
+        public async Task<bool> RemoverItem(int carrinhoId, int produtoId)
+        {
+            Console.WriteLine($"=== INÍCIO REMOÇÃO DE ITEM ===");
+            Console.WriteLine($"Buscando item - CarrinhoId: {carrinhoId}, ProdutoId: {produtoId}");
+
+            var item = await _context.ItensCarrinho
+                .FirstOrDefaultAsync(i => i.CarrinhoId == carrinhoId && i.ProdutoId == produtoId);
+
+            if (item == null)
+            {
+                Console.WriteLine($"Item não encontrado - CarrinhoId: {carrinhoId}, ProdutoId: {produtoId}");
+                return false;
+            }
+
+            Console.WriteLine($"Item encontrado - Id: {item.Id}, Quantidade: {item.Quantidade}, Subtotal: {item.Subtotal}");
+            Console.WriteLine("Removendo item do carrinho...");
+
+            _context.ItensCarrinho.Remove(item);
+            await _context.SaveChangesAsync();
+            Console.WriteLine("Item removido com sucesso do banco de dados");
+
+            // Atualiza o total do carrinho
+            var carrinho = await _context.Carrinhos
+                .Include(c => c.Itens)
+                .FirstOrDefaultAsync(c => c.Id == carrinhoId);
+
+            if (carrinho != null)
+            {
+                Console.WriteLine($"Atualizando total do carrinho - Total atual: {carrinho.Total}");
+                await AtualizarTotal(carrinho);
+                Console.WriteLine($"Novo total do carrinho: {carrinho.Total}");
+            }
+            else
+            {
+                Console.WriteLine($"Carrinho não encontrado para atualização - CarrinhoId: {carrinhoId}");
+            }
+
+            Console.WriteLine("=== FIM REMOÇÃO DE ITEM ===");
+            return true;
+        }
     }
 } 

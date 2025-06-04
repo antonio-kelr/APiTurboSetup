@@ -9,5 +9,6 @@ namespace APiTurboSetup.Interfaces
         Task<ItemCarrinho> AdicionarItem(Carrinho carrinho, int produtoId, int quantidade, decimal precoUnitario);
         Task<ItemCarrinho> AtualizarItem(ItemCarrinho item, int quantidade);
         Task<Carrinho> AtualizarTotal(Carrinho carrinho);
+        Task<bool> RemoverItem(int carrinhoId, int produtoId);
     }
 } 
