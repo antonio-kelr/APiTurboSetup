@@ -16,6 +16,7 @@ namespace APiTurboSetup.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Carrinho> Carrinhos { get; set; }
         public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
+        public DbSet<Endereco> Enderecos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,6 +68,13 @@ namespace APiTurboSetup.Data
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
                 .HasMaxLength(20);
+
+            // Configuração do relacionamento entre User e Endereco
+            modelBuilder.Entity<Endereco>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.Enderecos)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Semente de dados - categorias iniciais
             modelBuilder.Entity<Categoria>().HasData(

@@ -21,5 +21,8 @@ namespace APiTurboSetup.Models
         public string? Telefone { get; set; }
         public bool Ativo { get; set; }
         public string? Role { get; set; } // Para controle de permissões (ex: "admin", "user")
+
+        // Propriedade de navegação para os endereços
+        public virtual ICollection<Endereco>? Enderecos { get; set; }
     }
 } 
