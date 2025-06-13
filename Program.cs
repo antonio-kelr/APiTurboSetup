@@ -30,15 +30,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Registrar serviços
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IProdutoImagemRepository, ProdutoImagemRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
-builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<GoogleAuthService>();
+builder.Services.AddScoped<TokenService, TokenService>();
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<ITrocaEmailRepository, TrocaEmailRepository>();
+builder.Services.AddScoped<TrocaEmailRepository>();
 
 // Configuração de Autenticação JWT
 builder.Services.AddAuthentication(options =>

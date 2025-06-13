@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using BCrypt.Net;
+using System.Security.Claims;
+using APiTurboSetup.Models.DTOs;
+using APiTurboSetup.Repositories;
+using Microsoft.AspNetCore.Authorization;
 // Adicionando para IConfiguration, se necessário, mas TokenService já o usa.
 // using Microsoft.Extensions.Configuration;
 
@@ -18,13 +22,19 @@ namespace APiTurboSetup.Controllers
         private readonly TokenService _tokenService; // Injetando TokenService
         // private readonly IConfiguration _configuration; // Não é mais necessário aqui diretamente
         private readonly IGoogleAuthService _googleAuthService;
+        private readonly TrocaEmailRepository _trocaEmailRepository;
 
-        public UsersController(IUserRepository userRepository, TokenService tokenService /*, IConfiguration configuration*/, IGoogleAuthService googleAuthService)
+        public UsersController(
+            IUserRepository userRepository, 
+            TokenService tokenService /*, IConfiguration configuration*/, 
+            IGoogleAuthService googleAuthService,
+            TrocaEmailRepository trocaEmailRepository)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             // _configuration = configuration; 
             _googleAuthService = googleAuthService;
+            _trocaEmailRepository = trocaEmailRepository;
         }
 
         [HttpGet]
@@ -139,6 +149,78 @@ namespace APiTurboSetup.Controllers
             }
 
             return Ok(new { token, message, userId });
+        }
+
+        [HttpPost("login-email")]
+        public async Task<IActionResult> LoginEmail([FromBody] Models.LoginRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userRepository.GetByEmailAndSenhaAsync(request.Email, request.Senha);
+            if (user == null)
+                return BadRequest("Email ou senha incorretos");
+
+            var token = _tokenService.GenerateToken(user);
+            return Ok(new { token, userId = user.Id });
+        }
+
+        [HttpPost("solicitar-troca-email")]
+        [Authorize]
+        public async Task<IActionResult> SolicitarTrocaEmail([FromBody] TrocaEmailRequest request)
+        {
+            Console.WriteLine($"Request recebido: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}");
+            
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState inválido:");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+                return BadRequest(ModelState);
+            }
+
+            // Se o email atual não foi fornecido no request, pegar do token
+            if (string.IsNullOrEmpty(request.EmailAtual))
+            {
+                var emailAtual = User.FindFirst(ClaimTypes.Email)?.Value;
+                Console.WriteLine($"Email do token: {emailAtual}");
+                
+                if (string.IsNullOrEmpty(emailAtual))
+                    return BadRequest(new { mensagem = "Email não encontrado no token" });
+
+                request.EmailAtual = emailAtual;
+            }
+
+            Console.WriteLine($"Request final: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}");
+
+            var (sucesso, mensagem) = await _trocaEmailRepository.SolicitarTrocaEmailAsync(request);
+            Console.WriteLine($"Resultado: Sucesso={sucesso}, Mensagem={mensagem}");
+
+            if (!sucesso)
+                return BadRequest(new { mensagem });
+
+            return Ok(new { mensagem });
+        }
+
+        [HttpPost("confirmar-troca-email")]
+        [Authorize]
+        public async Task<IActionResult> ConfirmarTrocaEmail([FromBody] ConfirmarTrocaEmailRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var emailAtual = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(emailAtual))
+                return BadRequest(new { mensagem = "Email não encontrado no token" });
+
+            var (sucesso, mensagem) = await _trocaEmailRepository.ConfirmarTrocaEmailAsync(emailAtual, request.Codigo);
+
+            if (!sucesso)
+                return BadRequest(new { mensagem });
+
+            return Ok(new { mensagem });
         }
     }
 }

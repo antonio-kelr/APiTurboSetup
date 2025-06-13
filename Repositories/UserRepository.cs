@@ -3,6 +3,7 @@ using APiTurboSetup.Interfaces;
 using APiTurboSetup.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace APiTurboSetup.Repositories
 {
@@ -20,9 +21,54 @@ namespace APiTurboSetup.Repositories
 
         public async Task<User?> GetByEmailAndSenhaAsync(string email, string senha)
         {
-            return await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email && u.Senha == senha);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+                return null;
+
+            if (!BCrypt.Net.BCrypt.Verify(senha, user.Senha))
+                return null;
+
+            return user;
         }
 
+        public override async Task<bool> DeleteAsync(int id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+                return false;
+
+            // Excluir carrinhos do usuário
+            var carrinhos = await _context.Carrinhos
+                .Where(c => c.UserId == id)
+                .ToListAsync();
+
+            foreach (var carrinho in carrinhos)
+            {
+                // Excluir itens do carrinho
+                var itens = await _context.ItensCarrinho
+                    .Where(i => i.CarrinhoId == carrinho.Id)
+                    .ToListAsync();
+                _context.ItensCarrinho.RemoveRange(itens);
+
+                // Excluir o carrinho
+                _context.Carrinhos.Remove(carrinho);
+            }
+
+            // Excluir endereços do usuário
+            if (user.Enderecos != null)
+            {
+                _context.Enderecos.RemoveRange(user.Enderecos);
+            }
+
+            // Excluir o usuário
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace APiTurboSetup.Data
         public DbSet<Carrinho> Carrinhos { get; set; }
         public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
         public DbSet<Endereco> Enderecos { get; set; }
+        public DbSet<TrocaEmail> TrocasEmail { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
