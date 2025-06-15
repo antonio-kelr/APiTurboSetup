@@ -199,6 +199,11 @@ namespace APiTurboSetup.Controllers
                 return BadRequest(new { mensagem = "A senha atual é obrigatória" });
             }
 
+            // Buscar o usuário e verificar a senha atual (usando a mesma lógica do login)
+            var usuario = await _userRepository.GetByEmailAndSenhaAsync(request.EmailAtual, request.SenhaAtual);
+            if (usuario == null)
+                return BadRequest(new { mensagem = "Senha atual incorreta" });
+
             Console.WriteLine($"Request final: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}, SenhaAtual=***");
 
             var (sucesso, mensagem) = await _trocaEmailRepository.SolicitarTrocaEmailAsync(request);
@@ -227,6 +232,55 @@ namespace APiTurboSetup.Controllers
                 return BadRequest(new { mensagem });
 
             return Ok(new { mensagem });
+        }
+
+        [HttpPost("trocar-senha")]
+        [Authorize]
+        public async Task<IActionResult> TrocarSenha([FromBody] TrocaSenhaRequest request)
+        {
+            Console.WriteLine("Iniciando troca de senha...");
+            Console.WriteLine($"Request recebido: SenhaAtual=***, NovaSenha=***, ConfirmarNovaSenha=***");
+
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState inválido:");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+                return BadRequest(ModelState);
+            }
+
+            // Pegar o email do usuário do token
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            Console.WriteLine($"Email do token: {email}");
+
+            if (string.IsNullOrEmpty(email))
+                return BadRequest(new { mensagem = "Email não encontrado no token" });
+
+            // Buscar o usuário e verificar a senha atual (usando a mesma lógica do login)
+            var usuario = await _userRepository.GetByEmailAndSenhaAsync(email, request.SenhaAtual);
+            Console.WriteLine($"Usuário encontrado: {usuario != null}");
+            if (usuario != null)
+            {
+                Console.WriteLine($"Email do usuário: {usuario.Email}");
+                Console.WriteLine($"Senha atual está correta: {BCrypt.Net.BCrypt.Verify(request.SenhaAtual, usuario.Senha)}");
+            }
+
+            if (usuario == null)
+                return BadRequest(new { mensagem = "Senha atual incorreta" });
+
+            // Verificar se a nova senha é diferente da atual
+            if (request.SenhaAtual == request.NovaSenha)
+                return BadRequest(new { mensagem = "A nova senha deve ser diferente da senha atual" });
+
+            // Criptografar a nova senha
+            usuario.Senha = BCrypt.Net.BCrypt.HashPassword(request.NovaSenha);
+
+            // Atualizar o usuário
+            await _userRepository.UpdateAsync(usuario);
+
+            return Ok(new { mensagem = "Senha alterada com sucesso" });
         }
     }
 }

@@ -37,22 +37,6 @@ namespace APiTurboSetup.Repositories
                 return (false, "Novo email não pode ser vazio");
             }
 
-            // Verificar se o usuário existe e a senha está correta
-            var usuario = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.EmailAtual);
-
-            if (usuario == null)
-            {
-                Console.WriteLine($"Usuário não encontrado com o email: {request.EmailAtual}");
-                return (false, "Usuário não encontrado");
-            }
-
-            if (!BCrypt.Net.BCrypt.Verify(request.SenhaAtual, usuario.Senha))
-            {
-                Console.WriteLine("Senha incorreta");
-                return (false, "Senha incorreta");
-            }
-
             // Verificar se o novo email já está em uso
             var emailEmUso = await _context.Users
                 .AnyAsync(u => u.Email == request.NovoEmail);
