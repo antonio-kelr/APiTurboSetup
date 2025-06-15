@@ -65,7 +65,7 @@ namespace APiTurboSetup.Repositories
 
             // Gerar código de verificação
             var codigo = GerarCodigoVerificacao();
-            var expiracao = DateTime.UtcNow.AddMinutes(15);
+            var expiracao = DateTime.UtcNow.AddMinutes(1);
 
             Console.WriteLine($"Código gerado: {codigo}");
             Console.WriteLine($"Expira em: {expiracao}");

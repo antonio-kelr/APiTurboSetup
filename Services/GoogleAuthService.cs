@@ -52,7 +52,7 @@ namespace APiTurboSetup.Services
                     {
                         Nome = name,
                         Email = email,
-                        Senha = Guid.NewGuid().ToString(),
+                        Senha = "",
                         Cpf = "00000000000",
                         DataNascimento = DateOnly.FromDateTime(DateTime.UtcNow),
                         Genero = "Não informado",

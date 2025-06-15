@@ -99,7 +99,7 @@ namespace APiTurboSetup.Controllers
                 return Conflict("Já existe outro usuário com este email.");
 
             // Se a senha foi alterada, criptografa a nova senha
-            if (!string.IsNullOrEmpty(user.Senha) && user.Senha != existingUser.Senha)
+            if (!string.IsNullOrEmpty(user.Senha))
             {
                 user.Senha = BCrypt.Net.BCrypt.HashPassword(user.Senha);
             }
@@ -111,6 +111,7 @@ namespace APiTurboSetup.Controllers
 
             // Atualizar propriedades
             existingUser.Nome = user.Nome;
+            existingUser.Senha = user.Senha;
             existingUser.Email = user.Email;
             existingUser.Telefone = user.Telefone;
             existingUser.Ativo = user.Ativo;
@@ -169,7 +170,7 @@ namespace APiTurboSetup.Controllers
         [Authorize]
         public async Task<IActionResult> SolicitarTrocaEmail([FromBody] TrocaEmailRequest request)
         {
-            Console.WriteLine($"Request recebido: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}");
+            Console.WriteLine($"Request recebido: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}, SenhaAtual=***");
             
             if (!ModelState.IsValid)
             {
@@ -193,7 +194,12 @@ namespace APiTurboSetup.Controllers
                 request.EmailAtual = emailAtual;
             }
 
-            Console.WriteLine($"Request final: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}");
+            if (string.IsNullOrEmpty(request.SenhaAtual))
+            {
+                return BadRequest(new { mensagem = "A senha atual é obrigatória" });
+            }
+
+            Console.WriteLine($"Request final: EmailAtual={request.EmailAtual}, NovoEmail={request.NovoEmail}, SenhaAtual=***");
 
             var (sucesso, mensagem) = await _trocaEmailRepository.SolicitarTrocaEmailAsync(request);
             Console.WriteLine($"Resultado: Sucesso={sucesso}, Mensagem={mensagem}");

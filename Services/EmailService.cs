@@ -49,7 +49,7 @@ namespace APiTurboSetup.Services
             var body = $@"
                 <h2>Código de Verificação</h2>
                 <p>Seu código de verificação para troca de email é: <strong>{codigo}</strong></p>
-                <p>Este código é válido por 15 minutos.</p>
+                <p>Este código é válido por 1 minuto.</p>
                 <p>Se você não solicitou esta troca, por favor ignore este email.</p>";
 
             await EnviarEmailAsync(email, subject, body);

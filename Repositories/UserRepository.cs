@@ -27,7 +27,13 @@ namespace APiTurboSetup.Repositories
             if (user == null)
                 return null;
 
-            if (!BCrypt.Net.BCrypt.Verify(senha, user.Senha))
+            // Se a senha estiver vazia, é um usuário do Google que ainda não definiu senha
+            if (string.IsNullOrEmpty(user.Senha))
+                return null;
+
+            // Verifica se a senha fornecida corresponde à senha criptografada
+            bool senhaCorreta = BCrypt.Net.BCrypt.Verify(senha, user.Senha);
+            if (!senhaCorreta)
                 return null;
 
             return user;
