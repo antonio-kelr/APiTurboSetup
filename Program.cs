@@ -40,6 +40,7 @@ builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ITrocaEmailRepository, TrocaEmailRepository>();
 builder.Services.AddScoped<TrocaEmailRepository>();
+builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
 
 // Configuração de Autenticação JWT
 builder.Services.AddAuthentication(options =>

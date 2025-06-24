@@ -19,6 +19,7 @@ namespace APiTurboSetup.Repositories
             return await _context.Carrinhos
                 .Include(c => c.Itens)
                     .ThenInclude(i => i.Produto)
+                      .ThenInclude(p => p.Imagens)
                 .FirstOrDefaultAsync(c => c.UserId == userId && c.Ativo);
         }
 
@@ -55,7 +56,7 @@ namespace APiTurboSetup.Repositories
 
         public async Task<ItemCarrinho> AtualizarItem(ItemCarrinho item, int quantidade)
         {
-            item.Quantidade += quantidade;
+            item.Quantidade = quantidade;
             item.Subtotal = item.Quantidade * item.PrecoUnitario;
             await _context.SaveChangesAsync();
             return item;

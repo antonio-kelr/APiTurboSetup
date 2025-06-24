@@ -18,6 +18,7 @@ namespace APiTurboSetup.Data
         public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<TrocaEmail> TrocasEmail { get; set; }
+        public DbSet<Favorito> Favoritos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -103,6 +104,24 @@ namespace APiTurboSetup.Data
                 .WithMany()
                 .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Configurações dos Favoritos
+            modelBuilder.Entity<Favorito>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Favorito>()
+                .HasOne(f => f.Produto)
+                .WithMany()
+                .HasForeignKey(f => f.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Índice único para evitar duplicatas de favoritos
+            modelBuilder.Entity<Favorito>()
+                .HasIndex(f => new { f.UserId, f.ProdutoId })
+                .IsUnique();
         }
     }
 } 
