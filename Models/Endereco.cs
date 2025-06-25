@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 
 namespace APiTurboSetup.Models
 {
@@ -50,7 +52,10 @@ namespace APiTurboSetup.Models
         public int UserId { get; set; }
 
         // Propriedade de navegação para o usuário
+        
         [ForeignKey("UserId")]
+        [JsonIgnore] 
+        
         public virtual User? User { get; set; }
     }
 }

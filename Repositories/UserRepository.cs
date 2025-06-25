@@ -16,6 +16,7 @@ namespace APiTurboSetup.Repositories
         public async Task<User> GetByEmailAsync(string email)
         {
             return await _context.Users
+             .Include(u => u.Enderecos) 
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
@@ -75,6 +76,20 @@ namespace APiTurboSetup.Repositories
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public override async Task<User?> GetByIdAsync(int id)
+        {
+            return await _context.Users
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public override async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Enderecos)
+                .ToListAsync();
         }
     }
 }

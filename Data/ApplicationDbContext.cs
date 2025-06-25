@@ -19,6 +19,7 @@ namespace APiTurboSetup.Data
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<TrocaEmail> TrocasEmail { get; set; }
         public DbSet<Favorito> Favoritos { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -122,6 +123,27 @@ namespace APiTurboSetup.Data
             modelBuilder.Entity<Favorito>()
                 .HasIndex(f => new { f.UserId, f.ProdutoId })
                 .IsUnique();
+
+            // Configuração do relacionamento entre Pedido e User
+            modelBuilder.Entity<Pedido>()
+                .HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuração do relacionamento entre Pedido e Itens
+            modelBuilder.Entity<ItemPedido>()
+                .HasOne(i => i.Pedido)
+                .WithMany(p => p.Itens)
+                .HasForeignKey(i => i.PedidoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configuração do relacionamento entre ItemPedido e Produto
+            modelBuilder.Entity<ItemPedido>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 } 

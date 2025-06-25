@@ -3,6 +3,7 @@ using System;
 using APiTurboSetup.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APiTurboSetup.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250624212604_CriarPedidosAtualizandoIndereco")]
+    partial class CriarPedidosAtualizandoIndereco
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,6 +224,9 @@ namespace APiTurboSetup.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("EnderecoId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PedidoId")
                         .HasColumnType("integer");
 
@@ -256,9 +262,6 @@ namespace APiTurboSetup.Migrations
                     b.Property<DateTime>("DataPedido")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("EnderecoId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
@@ -267,8 +270,6 @@ namespace APiTurboSetup.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EnderecoId");
 
                     b.HasIndex("UserId");
 
@@ -510,17 +511,11 @@ namespace APiTurboSetup.Migrations
 
             modelBuilder.Entity("APiTurboSetup.Models.Pedido", b =>
                 {
-                    b.HasOne("APiTurboSetup.Models.Endereco", "Endereco")
-                        .WithMany()
-                        .HasForeignKey("EnderecoId");
-
                     b.HasOne("APiTurboSetup.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Endereco");
 
                     b.Navigation("User");
                 });

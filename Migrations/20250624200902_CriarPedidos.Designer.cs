@@ -3,6 +3,7 @@ using System;
 using APiTurboSetup.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APiTurboSetup.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250624200902_CriarPedidos")]
+    partial class CriarPedidos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,7 +259,7 @@ namespace APiTurboSetup.Migrations
                     b.Property<DateTime>("DataPedido")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("EnderecoId")
+                    b.Property<int>("EnderecoId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Status")
@@ -512,7 +515,9 @@ namespace APiTurboSetup.Migrations
                 {
                     b.HasOne("APiTurboSetup.Models.Endereco", "Endereco")
                         .WithMany()
-                        .HasForeignKey("EnderecoId");
+                        .HasForeignKey("EnderecoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("APiTurboSetup.Models.User", "User")
                         .WithMany()

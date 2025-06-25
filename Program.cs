@@ -41,6 +41,8 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ITrocaEmailRepository, TrocaEmailRepository>();
 builder.Services.AddScoped<TrocaEmailRepository>();
 builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+
 
 // Configuração de Autenticação JWT
 builder.Services.AddAuthentication(options =>
