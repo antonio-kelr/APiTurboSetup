@@ -59,7 +59,7 @@ namespace APiTurboSetup.Controllers
             {
                 var userId = GetUserId();
                 var removido = await _favoritoRepository.RemoverFavorito(userId, produtoId);
-                
+
                 if (!removido)
                     return NotFound(new { message = "Produto não encontrado nos favoritos" });
 
@@ -99,4 +99,4 @@ namespace APiTurboSetup.Controllers
     {
         public int ProdutoId { get; set; }
     }
-} 
+}

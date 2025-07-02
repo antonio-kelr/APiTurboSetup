@@ -109,5 +109,20 @@ namespace APiTurboSetup.Repositories
             Console.WriteLine("=== FIM REMOÇÃO DE ITEM ===");
             return true;
         }
+
+        public async Task<bool> LimparCarrinho(int carrinhoId)
+        {
+            var itens = await _context.ItensCarrinho.Where(i => i.CarrinhoId == carrinhoId).ToListAsync();
+            if (itens == null || itens.Count == 0)
+                return false;
+            _context.ItensCarrinho.RemoveRange(itens);
+            await _context.SaveChangesAsync();
+            var carrinho = await _context.Carrinhos.Include(c => c.Itens).FirstOrDefaultAsync(c => c.Id == carrinhoId);
+            if (carrinho != null)
+            {
+                await AtualizarTotal(carrinho);
+            }
+            return true;
+        }
     }
 } 

@@ -10,5 +10,6 @@ namespace APiTurboSetup.Interfaces
         Task<ItemCarrinho> AtualizarItem(ItemCarrinho item, int quantidade);
         Task<Carrinho> AtualizarTotal(Carrinho carrinho);
         Task<bool> RemoverItem(int carrinhoId, int produtoId);
+        Task<bool> LimparCarrinho(int carrinhoId);
     }
 } 

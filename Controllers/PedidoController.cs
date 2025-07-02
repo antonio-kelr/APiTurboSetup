@@ -3,6 +3,7 @@ using APiTurboSetup.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace APiTurboSetup.Controllers
 {
@@ -43,6 +44,8 @@ namespace APiTurboSetup.Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] Pedido pedido)
         {
+            // Define a data do pedido automaticamente em UTC
+            pedido.DataPedido = DateTime.UtcNow;
             await _pedidoRepository.AddAsync(pedido);
             return CreatedAtAction(nameof(GetById), new { id = pedido.Id }, pedido);
         }

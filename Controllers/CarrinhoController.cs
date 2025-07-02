@@ -198,5 +198,34 @@ namespace APiTurboSetup.Controllers
                 return BadRequest(new { message = "Erro ao remover produto do carrinho", error = ex.Message });
             }
         }
+
+        [HttpDelete("limpar")]
+        public async Task<IActionResult> LimparCarrinho()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                {
+                    return Unauthorized("Token inválido ou expirado");
+                }
+                var userId = int.Parse(userIdClaim.Value);
+                var carrinho = await _carrinhoRepository.ObterCarrinhoAtivoPorUsuario(userId);
+                if (carrinho == null)
+                {
+                    return NotFound("Carrinho não encontrado");
+                }
+                var sucesso = await _carrinhoRepository.LimparCarrinho(carrinho.Id);
+                if (!sucesso)
+                {
+                    return BadRequest(new { message = "Carrinho já está vazio ou ocorreu um erro ao limpar." });
+                }
+                return Ok(new { message = "Carrinho limpo com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Erro ao limpar carrinho", error = ex.Message });
+            }
+        }
     }
 } 

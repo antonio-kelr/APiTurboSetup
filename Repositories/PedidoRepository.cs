@@ -22,7 +22,9 @@ namespace APiTurboSetup.Repositories
             return await _context.Pedidos
                 .Include(p => p.Itens)
                 .ThenInclude(i => i.Produto)
+                    .ThenInclude(prod => prod.Imagens)
                 .Include(p => p.User)
+                .Include(p => p.Endereco)
                 .ToListAsync();
         }
 
@@ -31,7 +33,9 @@ namespace APiTurboSetup.Repositories
             return await _context.Pedidos
                 .Include(p => p.Itens)
                 .ThenInclude(i => i.Produto)
+                    .ThenInclude(prod => prod.Imagens)
                 .Include(p => p.User)
+                .Include(p => p.Endereco)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -41,12 +45,21 @@ namespace APiTurboSetup.Repositories
                 .Where(p => p.UserId == userId)
                 .Include(p => p.Itens)
                 .ThenInclude(i => i.Produto)
+                    .ThenInclude(prod => prod.Imagens)
                 .Include(p => p.User)
+                .Include(p => p.Endereco)
                 .ToListAsync();
         }
 
         public async Task AddAsync(Pedido pedido)
         {
+            if (pedido.Itens != null)
+            {
+                foreach (var item in pedido.Itens)
+                {
+                    item.Produto = null;
+                }
+            }
             await _context.Pedidos.AddAsync(pedido);
             await _context.SaveChangesAsync();
         }
