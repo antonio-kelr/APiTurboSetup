@@ -42,6 +42,7 @@ builder.Services.AddScoped<ITrocaEmailRepository, TrocaEmailRepository>();
 builder.Services.AddScoped<TrocaEmailRepository>();
 builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 
 
 // Configuração de Autenticação JWT

@@ -9,5 +9,6 @@ namespace APiTurboSetup.Interfaces
         Task<IEnumerable<Produto>> GetByCategoriaIdAsync(int categoriaId);
         Task<Produto?> GetByNomeAsync(string nome);
         Task<Produto?> GetBySlugAsync(string slug);
+        Task<IEnumerable<Produto>> SearchAsync(string query);
     }
 } 

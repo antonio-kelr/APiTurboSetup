@@ -28,11 +28,19 @@ namespace APiTurboSetup.Models
         // Chave estrangeira
         public int CategoriaId { get; set; }
         
+        [Required(ErrorMessage = "A marca do produto é obrigatória")]
+        [StringLength(100, ErrorMessage = "A marca deve ter no máximo 100 caracteres")]
+        public string Marca { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A quantidade do produto é obrigatória")]
+        public int Quantidade { get; set; }
+        
         // Propriedade de navegação - um produto pertence a uma categoria
         [ForeignKey("CategoriaId")]
         public virtual Categoria? Categoria { get; set; }
         
         // Propriedade de navegação - um produto pode ter várias imagens
         public virtual ICollection<ProdutoImagem>? Imagens { get; set; }
+
     }
 } 

@@ -4,6 +4,7 @@ using APiTurboSetup.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace APiTurboSetup.Controllers
 {
@@ -62,6 +63,24 @@ namespace APiTurboSetup.Controllers
                 return NotFound($"Categoria '{nomeCategoria}' não encontrada.");
 
             var produtos = await _produtoRepository.GetByCategoriaIdAsync(categoria.Id);
+            return Ok(produtos);
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Produto>>> SearchProdutos([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest("A consulta de busca não pode ser vazia.");
+            }
+
+            var produtos = await _produtoRepository.SearchAsync(query);
+
+            if (produtos == null || !produtos.Any())
+            {
+                return NotFound("Nenhum produto encontrado para a consulta fornecida.");
+            }
+
             return Ok(produtos);
         }
 
