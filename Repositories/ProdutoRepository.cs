@@ -29,6 +29,8 @@ namespace APiTurboSetup.Repositories
                                    CategoriaId = p.CategoriaId,
                                    Marca = p.Marca,
                                    Quantidade = p.Quantidade,
+                                   PrecoAntigo = p.PrecoAntigo,
+
 
                                    Categoria = new Categoria
                                    {
@@ -64,6 +66,7 @@ namespace APiTurboSetup.Repositories
                                   Marca = p.Marca,
                                   Quantidade = p.Quantidade,
 
+
                                   Categoria = new Categoria
                                   {
                                       Id = p.Categoria.Id,
@@ -89,6 +92,8 @@ namespace APiTurboSetup.Repositories
                                   CategoriaId = p.CategoriaId,
                                   Marca = p.Marca,
                                   Quantidade = p.Quantidade,
+                                  PrecoAntigo = p.PrecoAntigo,
+
 
                                   Categoria = new Categoria
                                   {
@@ -114,6 +119,7 @@ namespace APiTurboSetup.Repositories
                                   CategoriaId = p.CategoriaId,
                                   Marca = p.Marca,
                                   Quantidade = p.Quantidade,
+                                  PrecoAntigo = p.PrecoAntigo,
 
                                   Categoria = new Categoria
                                   {
@@ -129,10 +135,10 @@ namespace APiTurboSetup.Repositories
         {
             var lowerCaseQuery = query.ToLower();
             return await _context.Produtos
-               .Include(p => p.Imagens) 
-                .Where(p => p.Nome.ToLower().Contains(lowerCaseQuery) || 
-                
-                            p.Descricao.ToLower().Contains(lowerCaseQuery) || 
+               .Include(p => p.Imagens)
+                .Where(p => p.Nome.ToLower().Contains(lowerCaseQuery) ||
+
+                            p.Descricao.ToLower().Contains(lowerCaseQuery) ||
                             p.Marca.ToLower().Contains(lowerCaseQuery))
                 .ToListAsync();
         }
