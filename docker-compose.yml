@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build:
@@ -11,8 +13,6 @@ services:
   frontend:
     build:
       context: ../../FRONT-END/turbosetup
-      
-      
       dockerfile: Dockerfile
     ports:
       - "4200:4200"
