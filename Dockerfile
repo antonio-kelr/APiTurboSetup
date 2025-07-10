@@ -19,4 +19,4 @@ COPY --from=build /app/out .
 EXPOSE 5299
 
 # Comando para rodar sua aplicação
-ENTRYPOINT ["dotnet", "SeuProjeto.dll"]
+ENTRYPOINT ["dotnet", "APiTurboSetup.dll"]

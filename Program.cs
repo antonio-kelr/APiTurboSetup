@@ -14,10 +14,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // ⬅️ Coloque a URL do seu frontend aqui
+        policy.WithOrigins("http://localhost:4200", "http://frontend") // ⬅️ Coloque a URL do seu frontend aqui
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5299);
 });
 
 
@@ -76,6 +81,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.MapGet("/teste", () => "API funcionando legal!");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

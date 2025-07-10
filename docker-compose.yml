@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5299:5299"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  frontend:
+    build:
+      context: ../../FRONT-END/turbosetup
+      
+      
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
