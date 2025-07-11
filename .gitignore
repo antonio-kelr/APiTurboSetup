@@ -6,8 +6,6 @@ firebase-adminsdk.json
 
 # Arquivos de ambiente
 .env
-.env.local
-.env.*
 
 # Arquivos de build
 bin/

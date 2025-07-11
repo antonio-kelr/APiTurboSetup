@@ -9,12 +9,19 @@ services:
       - "5299:5299"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-
-  frontend:
-    build:
-      context: ../../FRONT-END/turbosetup
-      dockerfile: Dockerfile
-    ports:
-      - "4200:4200"
     depends_on:
-      - backend
+      - postgres
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: antonio
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+       - postgres-data-v2:/var/lib/postgresql/data
+
+volumes:
+  postgres-data-v2:

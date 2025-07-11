@@ -9,8 +9,6 @@ using System.Security.Claims;
 using APiTurboSetup.Models.DTOs;
 using APiTurboSetup.Repositories;
 using Microsoft.AspNetCore.Authorization;
-// Adicionando para IConfiguration, se necessário, mas TokenService já o usa.
-// using Microsoft.Extensions.Configuration;
 
 namespace APiTurboSetup.Controllers
 {
