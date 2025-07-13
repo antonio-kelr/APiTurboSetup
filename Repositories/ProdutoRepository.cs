@@ -131,6 +131,11 @@ namespace APiTurboSetup.Repositories
                               .FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<Produto?> GetEntityByIdAsync(int id)
+        {
+            return await _dbSet.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
         public async Task<IEnumerable<Produto>> SearchAsync(string query)
         {
             var lowerCaseQuery = query.ToLower();

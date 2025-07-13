@@ -10,5 +10,6 @@ namespace APiTurboSetup.Interfaces
         Task<Produto?> GetByNomeAsync(string nome);
         Task<Produto?> GetBySlugAsync(string slug);
         Task<IEnumerable<Produto>> SearchAsync(string query);
+        Task<Produto?> GetEntityByIdAsync(int id);
     }
 } 

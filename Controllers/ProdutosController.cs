@@ -124,7 +124,7 @@ namespace APiTurboSetup.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existingProduto = await _produtoRepository.GetByIdAsync(id);
+            var existingProduto = await _produtoRepository.GetEntityByIdAsync(id);
             if (existingProduto == null)
                 return NotFound("Produto não encontrado.");
 
