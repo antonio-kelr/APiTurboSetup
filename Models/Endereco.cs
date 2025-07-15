@@ -43,7 +43,7 @@ namespace APiTurboSetup.Models
         public string? TipoEndereco { get; set; } // "Principal" ou "Secundário"
 
         [StringLength(50, ErrorMessage = "A identificação deve ter no máximo 50 caracteres")]
-        public string? Identificacao { get; set; } // Ex: "Casa", "Trabalho", etc.
+        public string? Identificacao { get; set; } // Ex: "Casa", "Trabalho", etc.o
 
         public bool Ativo { get; set; } = true;
 

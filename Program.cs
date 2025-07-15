@@ -47,6 +47,7 @@ builder.Services.AddScoped<ITrocaEmailRepository, TrocaEmailRepository>();
 builder.Services.AddScoped<TrocaEmailRepository>();
 builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 
 
